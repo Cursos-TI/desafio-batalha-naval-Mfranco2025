@@ -13,18 +13,28 @@ int main()
     int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO] = {0};
 
     // ===================================================
-    // Definição das coordenadas dos navios básicos:
+    // Definição das coordenadas dos navios:
     // ===================================================
 
     // Navio Horizontal:
     // Posicionado na linha 2 (índice 1), começando na coluna D (índice 3)
-    int navio_horizontal_linha = 2;
+    int navio_horizontal_linha = 1;
     int navio_horizontal_coluna_inicio = 3;
 
     // Navio Vertical:
     // Posicionado na coluna G (índice 6), começando na linha 6 (índice 5)
     int navio_vertical_coluna = 6;
     int navio_vertical_linha_inicio = 5;
+
+    // Navio Diagonal Crescente:
+    // Começa no canto superior esquerdo (A1) e se estende diagonalmente
+    int navio_diagonal_crescente_linha_inicio = 0;
+    int navio_diagonal_crescente_coluna_inicio = 0;
+
+    // Navio Diagonal Decrescente:
+    // Começa no canto superior direito (J1) e se estende diagonalmente
+    int navio_diagonal_decrescente_linha_inicio = 0;
+    int navio_diagonal_decrescente_coluna_inicio = TAMANHO_TABULEIRO - 1; // Coluna J (índice 9)
 
     // ===================================================
     // Validações de posicionamento dos navios
@@ -43,6 +53,27 @@ int main()
         navio_vertical_linha_inicio + TAMANHO_NAVIO > TAMANHO_TABULEIRO)
     {
         printf("Erro: Navio vertical fora dos limites do tabuleiro!\n");
+        return 1;
+    }
+
+    // Verifica se o navio diagonal crescente cabe no tabuleiro
+    if (navio_diagonal_crescente_linha_inicio < 0 ||
+        navio_diagonal_crescente_linha_inicio + TAMANHO_NAVIO > TAMANHO_TABULEIRO ||
+        navio_diagonal_crescente_coluna_inicio < 0 ||
+        navio_diagonal_crescente_coluna_inicio + TAMANHO_NAVIO > TAMANHO_TABULEIRO)
+    {
+        printf("Erro: Navio diagonal crescente fora dos limites do tabuleiro!\n");
+        return 1;
+    }
+
+    // Verifica se o navio diagonal decrescente cabe no tabuleiro
+    // Para este navio, as colunas diminuem enquanto as linhas aumentam
+    if (navio_diagonal_decrescente_linha_inicio < 0 ||
+        navio_diagonal_decrescente_linha_inicio + TAMANHO_NAVIO > TAMANHO_TABULEIRO ||
+        navio_diagonal_decrescente_coluna_inicio < 0 ||
+        navio_diagonal_decrescente_coluna_inicio - (TAMANHO_NAVIO - 1) < 0)
+    {
+        printf("Erro: Navio diagonal decrescente fora dos limites do tabuleiro!\n");
         return 1;
     }
 
@@ -74,8 +105,34 @@ int main()
         tabuleiro[navio_vertical_linha_inicio + i][navio_vertical_coluna] = NAVIO;
     }
 
+    // Posiciona o navio diagonal crescente no tabuleiro
+    // (linha e coluna aumentam simultaneamente)
+    for (int i = 0; i < TAMANHO_NAVIO; i++)
+    {
+        // Verifica se a posição já está ocupada por outro navio
+        if (tabuleiro[navio_diagonal_crescente_linha_inicio + i][navio_diagonal_crescente_coluna_inicio + i] != AGUA)
+        {
+            printf("Erro: Sobreposição detectada no navio diagonal crescente!\n");
+            return 1;
+        }
+        tabuleiro[navio_diagonal_crescente_linha_inicio + i][navio_diagonal_crescente_coluna_inicio + i] = NAVIO;
+    }
+
+    // Posiciona o navio diagonal decrescente no tabuleiro
+    // (linha aumenta e coluna diminui simultaneamente)
+    for (int i = 0; i < TAMANHO_NAVIO; i++)
+    {
+        // Verifica se a posição já está ocupada por outro navio
+        if (tabuleiro[navio_diagonal_decrescente_linha_inicio + i][navio_diagonal_decrescente_coluna_inicio - i] != AGUA)
+        {
+            printf("Erro: Sobreposição detectada no navio diagonal decrescente!\n");
+            return 1;
+        }
+        tabuleiro[navio_diagonal_decrescente_linha_inicio + i][navio_diagonal_decrescente_coluna_inicio - i] = NAVIO;
+    }
+
     // ===================================================
-    // Exibe o tabuleiro com os navios
+    // Exibe o tabuleiro com todos os navios
     // ===================================================
     printf("Tabuleiro Batalha Naval\n");
     printf("--------------------------\n");
@@ -92,6 +149,5 @@ int main()
         }
         printf("\n");
     }
-
     return 0;
 }
